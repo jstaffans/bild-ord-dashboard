@@ -1,23 +1,33 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
-import { TopGroupsComponent } from './top-groups/top-groups.component';
+import { GaComponent } from './ga.component';
+
 import { GroupsService } from './groups.service';
+
+import { ChartsModule } from './charts/charts.module';
+
+import { clientKey, profileId } from './config.secret';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TopGroupsComponent
+    GaComponent
   ],
+
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    ChartsModule
   ],
-  providers: [{provide:'groups', useClass:GroupsService}],
-  bootstrap: [AppComponent]
+
+  providers: [{provide: 'groups', useClass: GroupsService},
+              {provide: 'client key', useValue: clientKey},
+              {provide: 'profile id', useValue: profileId}],
+
+  bootstrap: [AppComponent, GaComponent]
 })
+
 export class AppModule { }
