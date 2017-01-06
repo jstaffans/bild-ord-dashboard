@@ -1,5 +1,7 @@
 import { Component, Inject, AfterViewInit, ElementRef } from '@angular/core';
 
+import * as moment from 'moment';
+
 @Component({
   selector: 'ga-root',
   templateUrl: './ga.component.html',
@@ -10,6 +12,10 @@ export class GaComponent implements AfterViewInit {
   elementRef: ElementRef;
 
   scopes: String[];
+
+  sessionData: Array<any>;
+
+  fromTimestamp: Object;
 
   authorize(clientKey) {
     let authData = {
@@ -37,8 +43,9 @@ export class GaComponent implements AfterViewInit {
           'dimensions': 'ga:day',
           'metrics': 'ga:sessions'
         })
-          .then(function(response) {
-            console.log(response.result);
+          .then((response) => {
+            this.sessionData = [1, 2, 3, 4, 5];
+            console.log(this.sessionData);
           })
           .then(null, function(err) {
             // Log any errors.
@@ -50,9 +57,13 @@ export class GaComponent implements AfterViewInit {
   constructor(@Inject('client key') private clientKey: String,
               @Inject('profile id') private profileId: number,
               ele: ElementRef) {
+    this.fromTimestamp = moment().subtract(30, "days");
+
     (<any> window).authorize = this.authorize.bind(this, clientKey);
     this.scopes = ['https://www.googleapis.com/auth/analytics.readonly'];
     this.elementRef = ele;
+
+    this.sessionData = [];
   }
 
   ngAfterViewInit() {

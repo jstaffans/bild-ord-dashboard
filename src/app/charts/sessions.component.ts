@@ -1,9 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnChanges, DoCheck, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 
 import * as highcharts from 'highcharts';
-import * as moment from 'moment';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sessions',
   styles: [`
     chart {
@@ -14,16 +14,23 @@ import * as moment from 'moment';
 })
 export class SessionsComponent implements OnInit {
 
-  @Input() data: Array<any>;
+  @Input()
+  set data(data: Array<any>) {
+    this._data = data;
+  }
 
   @Input() fromTimestamp: moment.Moment;
 
   options: Object;
 
-  constructor() {
+  constructor(private ref: ChangeDetectorRef) {
+    ref.detach();
+    setInterval(() => {
+      this.ref.detectChanges();
+    }, 2000);
   }
 
-  ngOnInit() {
+  ngOnChanges() {
     const self = this;
 
     this.options = {
@@ -43,7 +50,7 @@ export class SessionsComponent implements OnInit {
       },
       series: [{
         name: 'Sessions',
-        data: this.data
+        data: this._data
       }]
     }
   }

@@ -5,8 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { GaComponent } from './ga.component';
 
-import { GroupsService } from './groups.service';
-
 import { ChartsModule } from './charts/charts.module';
 
 import { clientKey, profileId } from './config.secret';
@@ -23,8 +21,7 @@ import { clientKey, profileId } from './config.secret';
     ChartsModule
   ],
 
-  providers: [{provide: 'groups', useClass: GroupsService},
-              {provide: 'client key', useValue: clientKey},
+  providers: [{provide: 'client key', useValue: clientKey},
               {provide: 'profile id', useValue: profileId}],
 
   bootstrap: [AppComponent, GaComponent]
