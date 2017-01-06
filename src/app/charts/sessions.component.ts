@@ -2,6 +2,10 @@ import { Component, OnChanges, DoCheck, Input, ChangeDetectionStrategy, ChangeDe
 
 import * as highcharts from 'highcharts';
 
+import * as moment from 'moment';
+
+type SessionRow = [string, string, string];
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'sessions',
@@ -12,12 +16,9 @@ import * as highcharts from 'highcharts';
 `],
   template: `<chart [options]="options"></chart>`
 })
-export class SessionsComponent implements OnInit {
+export class SessionsComponent {
 
-  @Input()
-  set data(data: Array<any>) {
-    this._data = data;
-  }
+  @Input() data: Array<SessionRow>
 
   @Input() fromTimestamp: moment.Moment;
 
@@ -32,6 +33,17 @@ export class SessionsComponent implements OnInit {
 
   ngOnChanges() {
     const self = this;
+
+    const _data = [
+      this.linearize(this.data, this.fromTimestamp, "Finland"),
+      this.linearize(this.data, this.fromTimestamp, "Sweden"),
+    ];
+
+    const labels = ["Finland", "Sweden"];
+
+    const series = labels.map((label, i) => {
+      return {name: label, data: _data[i]}
+    });
 
     this.options = {
       title: {
@@ -48,11 +60,27 @@ export class SessionsComponent implements OnInit {
           }
         }
       },
-      series: [{
-        name: 'Sessions',
-        data: this._data
-      }]
+      series
     }
+  }
+
+  linearize(data: Array<SessionRow>, fromTimestamp: moment.Moment, country: string) {
+    let lookup = {};
+    let dateCounter = fromTimestamp.clone();
+    let result = [];
+
+    data.forEach(([dayOfMonth, c, sessions]) => {
+      if (c == country) {
+        lookup[parseInt(dayOfMonth)] = parseInt(sessions);
+      }
+    });
+
+    for (let i = 0; i < Object.keys(lookup).length; i++) {
+      result.push(lookup[dateCounter.date()] || 0);
+      dateCounter.add(1, "days");
+    }
+
+    return result;
   }
 
 }

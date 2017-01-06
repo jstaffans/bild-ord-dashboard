@@ -40,12 +40,11 @@ export class GaComponent implements AfterViewInit {
           'ids': 'ga:' + this.profileId,
           'start-date': '30daysAgo',
           'end-date': 'today',
-          'dimensions': 'ga:day',
+          'dimensions': 'ga:day,ga:country',
           'metrics': 'ga:sessions'
         })
           .then((response) => {
-            this.sessionData = [1, 2, 3, 4, 5];
-            console.log(this.sessionData);
+            this.sessionData = response.result.rows;
           })
           .then(null, function(err) {
             // Log any errors.
