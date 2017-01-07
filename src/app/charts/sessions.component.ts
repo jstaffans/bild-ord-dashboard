@@ -16,15 +16,16 @@ type SessionRow = [string, string, string];
 `],
   template: `<chart [options]="options"></chart>`
 })
-export class SessionsComponent {
+export class SessionsComponent implements OnChanges {
 
-  @Input() data: Array<SessionRow>
+  @Input() data: Array<SessionRow>;
 
   @Input() fromTimestamp: moment.Moment;
 
   options: Object;
 
   constructor(private ref: ChangeDetectorRef) {
+    // TODO: better way of detecting changes than polling every few seconds
     ref.detach();
     setInterval(() => {
       this.ref.detectChanges();
@@ -59,6 +60,9 @@ export class SessionsComponent {
             return label.format('D.M.');
           }
         }
+      },
+      yAxis: {
+        tickInterval: 5
       },
       series
     }

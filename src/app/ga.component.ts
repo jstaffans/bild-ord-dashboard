@@ -13,7 +13,9 @@ export class GaComponent implements AfterViewInit {
 
   scopes: String[];
 
-  sessionData: Array<any>;
+  sessionData: Array<[string, string, string]>;
+
+  groupData: Array<[string, string, string]>;
 
   fromTimestamp: Object;
 
@@ -49,7 +51,24 @@ export class GaComponent implements AfterViewInit {
           .then(null, function(err) {
             // Log any errors.
             console.log(err);
+          });
+
+        (<any> window).gapi.client.analytics.data.ga.get({
+          'ids': 'ga:' + this.profileId,
+          'start-date': '30daysAgo',
+          'end-date': 'today',
+          'dimensions': 'ga:pageTitle,ga:eventLabel',
+          'metrics': 'ga:uniqueEvents',
+          'sort': '-ga:uniqueEvents'
+        })
+          .then((response) => {
+            this.groupData = response.result.rows;
+            console.log(this.groupData);
           })
+          .then(null, function(err) {
+            // Log any errors.
+            console.log(err);
+          });
       });
   }
 
@@ -63,6 +82,7 @@ export class GaComponent implements AfterViewInit {
     this.elementRef = ele;
 
     this.sessionData = [];
+    this.groupData = [];
   }
 
   ngAfterViewInit() {
