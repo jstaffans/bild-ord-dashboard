@@ -69,9 +69,14 @@ export class SessionsComponent implements OnChanges {
   }
 
   linearize(data: Array<SessionRow>, fromTimestamp: moment.Moment, country: string) {
-    let lookup = {};
-    let dateCounter = fromTimestamp.clone();
-    let result = [];
+    if (data.length === 0) {
+      return [];
+    }
+
+    const lookup = {};
+    const dateCounter = fromTimestamp.clone();
+    const today = moment();
+    const result = [];
 
     data.forEach(([dayOfMonth, c, sessions]) => {
       if (c == country) {
@@ -79,12 +84,11 @@ export class SessionsComponent implements OnChanges {
       }
     });
 
-    for (let i = 0; i < Object.keys(lookup).length; i++) {
+    while (dateCounter.isBefore(today)) {
       result.push(lookup[dateCounter.date()] || 0);
       dateCounter.add(1, "days");
     }
 
     return result;
   }
-
 }
