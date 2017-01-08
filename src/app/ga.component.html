@@ -1,10 +1,14 @@
-<sessions [data]="sessionData" [fromTimestamp]="fromTimestamp"></sessions>
+<sessions [data]="sessions" [fromTimestamp]="fromTimestamp"></sessions>
+
+<div>
+  <popular [data]="groupViews"></popular>
+</div>
 
 <div class="flex-grid-2 groups">
   <div class="col">
-    <ratios order="ascending" title="Easiest groups" [data]="groupData"></ratios>
+    <ratios order="ascending" title="Easiest groups" [data]="groupEvents"></ratios>
   </div>
   <div class="col">
-    <ratios order="descending" title="Most difficult groups" [data]="groupData"></ratios>
+    <ratios order="descending" title="Most difficult groups" [data]="groupEvents"></ratios>
   </div>
 </div>
