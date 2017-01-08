@@ -13,9 +13,11 @@ export class GaComponent implements AfterViewInit {
 
   scopes: String[];
 
-  sessionData: Array<[string, string, string]>;
+  sessions: Array<[string, string, string]>;
 
-  groupData: Array<[string, string, string]>;
+  groupViews: Array<[string, string]>;
+
+  groupEvents: Array<[string, string, string]>;
 
   fromTimestamp: Object;
 
@@ -46,10 +48,25 @@ export class GaComponent implements AfterViewInit {
           'metrics': 'ga:sessions'
         })
           .then(response => {
-            this.sessionData = response.result.rows;
+            this.sessions = response.result.rows;
           })
-          .then(null, function(err) {
-            // Log any errors.
+          .then(null, err => {
+            console.log(err);
+          });
+
+        (<any> window).gapi.client.analytics.data.ga.get({
+          'ids': 'ga:' + this.profileId,
+          'start-date': '30daysAgo',
+          'end-date': 'today',
+          'dimensions': 'ga:pageTitle',
+          'metrics': 'ga:pageviews',
+          'sort': '-ga:pageviews',
+          'filters': 'ga:pageTitle=@grupp'
+        })
+          .then(response => {
+            this.groupViews = response.result.rows;
+          })
+          .then(null, err => {
             console.log(err);
           });
 
@@ -62,10 +79,9 @@ export class GaComponent implements AfterViewInit {
           'sort': '-ga:uniqueEvents'
         })
           .then(response => {
-            this.groupData = response.result.rows;
+            this.groupEvents = response.result.rows;
           })
-          .then(null, function(err) {
-            // Log any errors.
+          .then(null, err => {
             console.log(err);
           });
       });
@@ -80,8 +96,9 @@ export class GaComponent implements AfterViewInit {
     this.scopes = ['https://www.googleapis.com/auth/analytics.readonly'];
     this.elementRef = ele;
 
-    this.sessionData = [];
-    this.groupData = [];
+    this.sessions = [];
+    this.groupViews = [];
+    this.groupEvents = [];
   }
 
   ngAfterViewInit() {
