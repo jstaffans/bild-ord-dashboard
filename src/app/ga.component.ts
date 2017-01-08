@@ -45,7 +45,7 @@ export class GaComponent implements AfterViewInit {
           'dimensions': 'ga:day,ga:country',
           'metrics': 'ga:sessions'
         })
-          .then((response) => {
+          .then(response => {
             this.sessionData = response.result.rows;
           })
           .then(null, function(err) {
@@ -61,9 +61,8 @@ export class GaComponent implements AfterViewInit {
           'metrics': 'ga:uniqueEvents',
           'sort': '-ga:uniqueEvents'
         })
-          .then((response) => {
+          .then(response => {
             this.groupData = response.result.rows;
-            console.log(this.groupData);
           })
           .then(null, function(err) {
             // Log any errors.
