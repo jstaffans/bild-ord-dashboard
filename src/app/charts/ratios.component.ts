@@ -8,6 +8,8 @@ type NumEvents = string;
 
 type GroupRow = [GroupTitle, EventLabel, NumEvents];
 
+type Order = 'ascending' | 'descending';
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ratios',
@@ -19,6 +21,10 @@ type GroupRow = [GroupTitle, EventLabel, NumEvents];
   template: `<chart [options]="options"></chart>`
 })
 export class RatiosComponent implements OnChanges {
+
+  @Input() order: Order;
+
+  @Input() title: string;
 
   @Input() data: Array<GroupRow>;
 
@@ -33,32 +39,42 @@ export class RatiosComponent implements OnChanges {
 
   stack(data: Array<GroupRow>) {
     const lookup = {};
+    let sortFn: (a, b) => number;
+
+    if (this.order === 'descending') {
+      sortFn = (a, b) => {
+        return (a[1] / a[2]) - (b[1] / b[2]);
+      }
+    } else {
+      sortFn = (a, b) => {
+        return (b[1] / b[2]) - (a[1] / a[2]);
+      }
+    }
 
     data.forEach(([title, event, numEvents]) => {
-      let acc = lookup[title] || [];
+      const shortTitle = title.replace('Bild och ord - grupp', 'Grupp');
+      const acc = lookup[shortTitle] || [];
       acc[event === 'Rätt' ? 0 : 1] = parseInt(numEvents);
-      lookup[title] = acc;
+      lookup[shortTitle] = acc;
     });
 
     const stacked = Object.keys(lookup).map(key => {
       return [key, lookup[key][0], lookup[key][1]];
-    });
+    }).sort(sortFn);
 
     return stacked;
   }
 
-  updateChart() {
-    const self = this;
 
-    const _data = this.stack(this.data);
-    console.log(_data.map(row => row[0]))
+  updateChart() {
+    const _data = this.stack(this.data).slice(0, 10);
 
     this.options = {
       chart: {
         type: 'bar'
       },
       title: {
-        text: 'Most difficult groups'
+        text: this.title
       },
       xAxis: {
         categories: _data.map(row => row[0])
@@ -68,7 +84,7 @@ export class RatiosComponent implements OnChanges {
         type: 'linear',
         tickInterval: 5,
         title: {
-          text: 'Number of word interactions'
+          text: 'Percentage of word interactions'
         }
       },
       legend: {
@@ -80,11 +96,11 @@ export class RatiosComponent implements OnChanges {
         }
       },
       series: [{
-        name: 'Ratt',
+        name: 'Right',
         data: _data.map(row => row[1]),
         color: '#00CD00'
       }, {
-        name: 'Fel',
+        name: 'Wrong',
         data: _data.map(row => row[2]),
         color: '#FC1501'
       }]
@@ -94,5 +110,4 @@ export class RatiosComponent implements OnChanges {
   ngOnChanges() {
     this.updateChart();
   }
-
 }

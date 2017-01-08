@@ -1,0 +1,12 @@
+.flex-grid-2 {
+    display: flex;
+    justify-content: space-between;
+}
+
+.col {
+    flex: 1;
+}
+
+.flex-grid-2 .col {
+    width: 48%;
+}
